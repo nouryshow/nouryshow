@@ -1,41 +1,83 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NOURYSHOW</title>
   <style>
     body {
-      background-color: #000000;
-      color: #A8FF60;
-      font-family: 'Courier New', Courier, monospace;
-      text-align: center;
+      background-color: #000;
+      color: #aaffaa;
+      font-family: sans-serif;
       margin: 0;
-      padding: 2rem;
+      padding: 20px;
     }
     h1 {
-      font-size: 3em;
-      margin-bottom: 0.2em;
+      text-align: center;
+      margin-bottom: 40px;
+      color: #aaffaa;
     }
-    p.tagline {
-      font-style: italic;
-      font-size: 1.2em;
-      margin-top: 0;
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
     }
-    iframe {
-      margin-top: 2rem;
-      border: none;
-      width: 90%;
-      height: 500px;
-      max-width: 800px;
+    .card {
+      background-color: #111;
+      border: 1px solid #2a2;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 10px #2f2;
+    }
+    .card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+    .name {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .price {
+      color: #9f9;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>NOURYSHOW</h1>
-  <p class="tagline">A quiet escape from the noise of life, where I find peace through code.</p>
+  <h1>NOURYSHOW - المنتجات</h1>
+  <div class="products" id="product-container">جاري التحميل...</div>
 
- <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQycyR8dsmvGKHDxr65CFe2JhwgIzNKuSKn6nRncJAdq7WAEnYEBp0AtPBqUHSMJcGnoepe9jgPARh7/pubhtml?widget=true&amp;headers=false"></iframe>
+  <script>
+    const sheetID = "1gRNaCJFRuRFpmkFtZ2kbN_qclo-Zx3H-fUWPhJOKaT4";
+    const sheetName = "Feuille 1"; // غيّره إذا كانت ورقة الجدول باسم آخر
+    const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("product-container");
+        container.innerHTML = "";
+        data.forEach(item => {
+          if (item.view.trim() === "نعم") {
+            const imgID = item.IMAGEURL.split("/d/")[1]?.split("/")[0];
+            const imgURL = `https://drive.google.com/uc?export=view&id=${imgID}`;
+            container.innerHTML += `
+              <div class="card">
+                <img src="${imgURL}" alt="${item.NAME}" />
+                <div class="name">${item.NAME}</div>
+                <div class="price">${item.PRICE}</div>
+              </div>
+            `;
+          }
+        });
+      })
+      .catch(err => {
+        document.getElementById("product-container").innerText = "تعذر تحميل البيانات.";
+        console.error("Error fetching data:", err);
+      });
+  </script>
 </body>
 </html>
